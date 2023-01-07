@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">Patient Data Entry</string>
+    <string name="labelpatientname">Enter Patient Name</string>
+    <string name="lblpatientname">Patient Name</string>
+    <string name="labelpatientage">Enter Patient Age</string>
+    <string name="lblpatientage">Patient Age</string>
+    <string name="radio_male">Male</string>
+    <string name="radio_female">Female</string>
+    <string name="radio_transgender">Transgender</string>
+    <string name="labelpatientmobile">Enter Mobile Number</string>
+    <string name="lblpatientmobile">Mobile Number</string>
+    <string name="labelpatientemail">Enter EmailId</string>
+    <string name="lblpatientemail">EmailId</string>
+    <string name="patient_photo">Click Patient Photo</string>
+    <string name="labeldoctorname">Enter Doctor Name</string>
+    <string name="lbldoctorname">Doctor Name</string>
+    <string name="labeldoctoremail">Enter Doctor Email</string>
+    <string name="lbldoctoremail">Doctor Email</string>
+    <string name="labelbaldnessGrade">Enter Baldness Grade</string>
+    <string name="lblbaldnessGrade">Baldness Grade</string>
+    <string name="labelhairtype">Enter Hair Type</string>
+    <string name="lblhairtype">Hair Type</string>
+    <string name="labelsurgicalPlanSugg">Select Surgical Plan Suggested</string>
+    <string name="lblsurgicalPlanSugg">Surgical Plan Suggested</string>
+    <string name="labelsurgicalPlanOpted">Select Surgical Plan Opted</string>
+    <string name="lblsurgicalPlanOpted">Surgical Plan Opted</string>
+    <string name="labelsurgeryDtTi">Surgery Date</string>
+    <string name="before_scalp_photo">Click Scalp Photo</string>
+    <string name="after_scalp_photo">Click Scalp Photo</string>
+    <string name="labelvalue1">Grafts Extracted</string>
+    <string name="labelvalue2">Grafts Implanted</string>
+    <string name="upload_screenshot_photo">Upload Screenshot Photo</string>
+    <string name="button_save">Save Patient Information</string>
+    <string name="button_next">Submit &amp; Next</string>
+    <string name="button_getpdf">Get PDF</string>
+    <string name="button_get">Get Data</string>
+    <string name="patient_list">Patient List</string>
+    <string name="send_patient_pdf_email">Send Patient PDF Email</string>
+    <string name="new_patient_entry">New Patient Entry</string>
+    <string name="title_main_activity">MainActivity</string>
+    <string name="title_patientlist_activity">Patient List</string>
+    <string name="title_patientlistdetials_activity">Patient Data</string>
+    <string name="action_getlist">Get List</string>
+    <string name="action_share">System Config</string>
+    <string name="action_about">About Us</string>
+
+    <string-array name="SurgeryPlans">
+        <item>A. HAIR LINE REPAIR</item>
+        <item>B. BITEMORTAL</item>
+        <item>C. FRONTAL AND MIDSCALP</item>
+        <item>D. FRONTAL, MIDSCALP AND VERTEX</item>
+    </string-array>
+</resources>
