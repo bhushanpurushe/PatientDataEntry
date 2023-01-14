@@ -1,12 +1,10 @@
 package com.example.patientdataentry
 
-import android.graphics.Movie
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.patientdataentry.database.entity.PatientDataEntity
 
@@ -18,9 +16,7 @@ class GetPatientListAdapter(private val patientList: List<PatientDataEntity>,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
         // that is used to hold list item
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.get_patient_list_item, parent, false)
-
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.get_patient_list_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -28,10 +24,8 @@ class GetPatientListAdapter(private val patientList: List<PatientDataEntity>,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val ItemsViewModel = patientList[position]
-
         // sets the image to the imageview from our itemHolder class
         //holder.fullNametextView.setImageResource(ItemsViewModel.image)
-
         // sets the text to the textview from our itemHolder class
         holder.fullNametextView.text = ItemsViewModel.patient_name
         holder.emailtextView.text = ItemsViewModel.patient_email
@@ -42,7 +36,6 @@ class GetPatientListAdapter(private val patientList: List<PatientDataEntity>,
         holder.patientListLinearLayout.setOnClickListener {
             onItemClicked(ItemsViewModel)
         }
-
     }
 
     // return the number of the items in the list

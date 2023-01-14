@@ -39,6 +39,12 @@ data class PatientDataEntity(
     var patient_surg_plan_opted: String,
     @ColumnInfo(name = "patient_before_scalp_photo")
     var patient_before_scalp_photo: String,
+
+    @ColumnInfo(name = "patient_before_left_scalp_photo")
+    var patient_before_left_scalp_photo: String,
+    @ColumnInfo(name = "patient_before_right_scalp_photo")
+    var patient_before_right_scalp_photo: String,
+
     @ColumnInfo(name = "patient_after_scalp_photo")
     var patient_after_scalp_photo: String,
     @ColumnInfo(name = "patient_surg_datetime")
@@ -50,5 +56,7 @@ data class PatientDataEntity(
     @ColumnInfo(name = "patient_upload_screenshot")
     var patient_upload_screenshot: String,
     @ColumnInfo(name = "patient_pdf_path")
-    var patient_pdf_path: String
+    var patient_pdf_path: String,
+    @ColumnInfo(name = "patient_surg_end_datetime")
+    var patient_surg_end_datetime: String
     )

@@ -35,7 +35,5 @@ class HomeActivity : AppCompatActivity() {
         sendPatientEmailButton.setOnClickListener {
 
         }
-
     }
-
 }

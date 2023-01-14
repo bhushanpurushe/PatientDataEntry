@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/parentConstraintLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/purple_700">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -16,12 +17,16 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/nameTextInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:hint="@string/labelpatientname"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -31,8 +36,11 @@
                     android:id="@+id/nameTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:imeOptions="actionNext"
-                    android:inputType="text" />
+                    android:inputType="textCapWords" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -43,6 +51,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labelpatientage"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -54,6 +66,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:imeOptions="actionNext"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -73,6 +88,8 @@
                     android:id="@+id/radioMale"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:buttonTint="@color/colorPrimary"
                     android:checked="true"
                     android:text="@string/radio_male" />
 
@@ -80,12 +97,16 @@
                     android:id="@+id/radioFemale"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:buttonTint="@color/colorPrimary"
                     android:text="@string/radio_female" />
 
                 <RadioButton
                     android:id="@+id/radiotransgender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:buttonTint="@color/colorPrimary"
                     android:text="@string/radio_transgender" />
 
             </RadioGroup>
@@ -96,6 +117,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labelpatientmobile"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -106,6 +131,9 @@
                     android:id="@+id/mobileTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:inputType="number"
                     android:imeOptions="actionNext"/>
 
@@ -118,6 +146,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labelpatientemail"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -128,7 +160,11 @@
                     android:id="@+id/emailTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:inputType="textEmailAddress"
+                    android:importantForAutofill="no"
                     android:imeOptions="actionNext"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -178,6 +214,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labeldoctorname"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -188,7 +228,10 @@
                     android:id="@+id/drNameTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
+                    android:inputType="textCapWords"
                     android:imeOptions="actionNext"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -200,6 +243,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labeldoctoremail"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -210,7 +257,11 @@
                     android:id="@+id/drEmailTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:inputType="textEmailAddress"
+                    android:importantForAutofill="no"
                     android:imeOptions="actionNext"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -222,6 +273,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labelbaldnessGrade"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -232,6 +287,9 @@
                     android:id="@+id/baldnessGradeTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:inputType="text"
                     android:imeOptions="actionNext"/>
 
@@ -244,6 +302,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labelhairtype"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -254,6 +316,9 @@
                     android:id="@+id/hairTypeTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:inputType="text"
                     android:imeOptions="actionNext"/>
 
@@ -266,6 +331,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labelsurgicalPlanSugg"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -276,6 +345,9 @@
                     android:id="@+id/surgicalPlanSuggTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:inputType="none"
                     android:imeOptions="actionNext"/>
 
@@ -288,6 +360,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labelsurgicalPlanOpted"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -298,6 +374,9 @@
                     android:id="@+id/surgicalPlanOptedTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:inputType="none"
                     android:imeOptions="actionNext"/>
 
@@ -310,6 +389,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:hintTextColor="@color/colorPrimary"
+                app:hintTextAppearance="?attr/textAppearanceCaption"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="@string/labelsurgeryDtTi"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -320,6 +403,9 @@
                     android:id="@+id/surgeryDtTiTextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textColor="@color/colorPrimary"
+                    android:textCursorDrawable="@drawable/edittext_color_cursor"
                     android:inputType="text"
                     android:enabled="false"
                     android:focusable="false"
@@ -352,6 +438,58 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scalp_before_photo_button"/>
+
+            <Button
+                android:id="@+id/left_scalp_before_photo_button"
+                style="@style/GreenButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/before_left_scalp_photo"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/before_scalp_imageView" />
+
+            <ImageView
+                android:id="@+id/before_left_scalp_imageView"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/left_scalp_before_photo_button"/>
+
+            <Button
+                android:id="@+id/right_scalp_before_photo_button"
+                style="@style/GreenButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/before_right_scalp_photo"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/before_left_scalp_imageView" />
+
+            <ImageView
+                android:id="@+id/before_right_scalp_imageView"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/right_scalp_before_photo_button"/>
 
             <!--<Button
                 android:id="@+id/scalp_after_photo_button"
@@ -457,7 +595,35 @@
                 android:textAllCaps="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/before_scalp_imageView" />
+                app:layout_constraintTop_toBottomOf="@+id/before_right_scalp_imageView" />
+
+            <Button
+                android:id="@+id/open_hotspt_button"
+                style="@style/RedButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/button_open_hotspot"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/save_button" />
+
+            <Button
+                android:id="@+id/open_blynkapp_button"
+                style="@style/RedButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/button_blynkapp"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/open_hotspt_button" />
 
             <!--<Button
                 android:id="@+id/get_button"

@@ -1,29 +1,31 @@
 package com.example.patientdataentry
 
-import android.content.ContentResolver
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
+import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
+import com.canhub.cropper.CropImageView
 import com.example.patientdataentry.database.db.PatientAppDB
 import com.example.patientdataentry.database.entity.PatientDataEntity
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.itextpdf.text.*
@@ -32,9 +34,9 @@ import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var mParentConstraintLayout : ConstraintLayout
     private lateinit var nameTxtInpEditTxt : TextInputEditText
     private lateinit var nameTxtInputLayout : TextInputLayout
     private lateinit var ageTxtInpEditTxt : TextInputEditText
@@ -49,44 +51,34 @@ class MainActivity : AppCompatActivity() {
     private lateinit var surgPlanSuggTxtInpEditTxt : AutoCompleteTextView
     private lateinit var surgPlanOptTxtInpEditTxt : AutoCompleteTextView
     private lateinit var surDtTiTxtInpEditTxt : TextInputEditText
-   /* private lateinit var value1TxtInpEditTxt : TextInputEditText
-    private lateinit var value2TxtInpEditTxt : TextInputEditText*/
     private lateinit var saveButton : Button
+    private lateinit var openBlynkAppButton : Button
+    private lateinit var openHotspotButton : Button
     private lateinit var patientPhotoButton : Button
     private lateinit var patientScalpBeforeButton : Button
-//    private lateinit var patientScalpAfterButton : Button
-//    private lateinit var patientUploadScreenshotButton : Button
-    /*private lateinit var getButton : Button*/
-
-    private var patientImage: Image? = null
-    private var beforeScalpImage: Image? = null
-    private var afterScalpImage: Image? = null
-    private var screenshotImage: Image? = null
-
-    /*private lateinit var cropImageView: CropImageView*/
+    private lateinit var patientLeftScalpBeforeButton : Button
+    private lateinit var patientRightScalpBeforeButton : Button
     private lateinit var setProfilePhotoImageView: ImageView
     private lateinit var setBeforeScalpImageView: ImageView
-//    private lateinit var setAfterScalpImageView: ImageView
-//    private lateinit var setUploadScreenshotImageView: ImageView
+    private lateinit var setBeforeLeftScalpImageView: ImageView
+    private lateinit var setBeforeRightScalpImageView: ImageView
 
     private var patientPhotoAbsolutePath: String? = ""
     private var beforeScalpAbsolutePath: String? = ""
-    private var afterScalpAbsolutePath: String? = ""
-
-    private lateinit var patientPhotoBitmap: Bitmap
-    private lateinit var beforeScalpBitmap: Bitmap
-    private lateinit var afterScalpBitmap: Bitmap
+    private var beforeLeftScalpAbsolutePath: String? = ""
+    private var beforeRightScalpAbsolutePath: String? = ""
 
     private var patientPhotoUri : Uri? = null
     private var patientBeforeScalpPhotoUri : Uri? = null
-    private var patientAfterScalpPhotoUri : Uri? = null
-    private var imagePickedScreenshotUri : Uri? = null
+    private var patientBeforeLeftScalpPhotoUri : Uri? = null
+    private var patientBeforeRightScalpPhotoUri : Uri? = null
 
     private val ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 44
     private val BEFORE_SCALP_PERMISSION__REQUEST_CODE = 45
-    private val AFTER_SCALP_PERMISSION_REQUEST_CODE = 46
+    private val BEFORE_LEFT_SCALP_PERMISSION__REQUEST_CODE = 46
+    private val BEFORE_RIGHT_SCALP_PERMISSION__REQUEST_CODE = 47
+    private val AFTER_SCALP_PERMISSION_REQUEST_CODE = 48
     private val REQUIRED_PERMISSIONS = arrayOf("android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE")
-
 
     private val patientAppDB by lazy { PatientAppDB.getAppDb(this)?.patientdao() }
 
@@ -95,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        mParentConstraintLayout = findViewById(R.id.parentConstraintLayout)
         nameTxtInpEditTxt = findViewById(R.id.nameTextInputEditText)
         nameTxtInputLayout = findViewById(R.id.nameTextInputLayout)
         ageTxtInpEditTxt = findViewById(R.id.ageTextInputEditText)
@@ -114,63 +107,34 @@ class MainActivity : AppCompatActivity() {
         surgPlanSuggTxtInpEditTxt.setAdapter(adapter)
         surgPlanOptTxtInpEditTxt.setAdapter(adapter)
 
-       /* value1TxtInpEditTxt = findViewById(R.id.value1TextInputEditText)
-        value2TxtInpEditTxt = findViewById(R.id.value2TextInputEditText)*/
-
-        nameTxtInpEditTxt.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
+        /*nameTxtInpEditTxt.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
+        emailTxtInpEditTxt.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
+        docEmailTxtInpEditTxt.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)*/
 
         saveButton = findViewById(R.id.save_button)
+        openBlynkAppButton = findViewById(R.id.open_blynkapp_button)
+        openHotspotButton = findViewById(R.id.open_hotspt_button)
         patientPhotoButton = findViewById(R.id.patient_photo_button)
         patientScalpBeforeButton = findViewById(R.id.scalp_before_photo_button)
-//        patientScalpAfterButton = findViewById(R.id.scalp_after_photo_button)
-//        patientUploadScreenshotButton = findViewById(R.id.upload_screenshot_button)
-       /* getButton = findViewById(R.id.get_button)*/
+        patientLeftScalpBeforeButton = findViewById(R.id.left_scalp_before_photo_button)
+        patientRightScalpBeforeButton = findViewById(R.id.right_scalp_before_photo_button)
 
-        //cropImageView = findViewById(R.id.cropImageView)
         setProfilePhotoImageView = findViewById(R.id.profile_imageView)
         setBeforeScalpImageView = findViewById(R.id.before_scalp_imageView)
-//        setAfterScalpImageView = findViewById(R.id.after_scalp_imageView)
-//        setUploadScreenshotImageView = findViewById(R.id.upload_screenshots_imageView)
+        setBeforeLeftScalpImageView = findViewById(R.id.before_left_scalp_imageView)
+        setBeforeRightScalpImageView = findViewById(R.id.before_right_scalp_imageView)
 
         val date = getCurrentDate()
         System.out.println(" today date is - $date")
         surDtTiTxtInpEditTxt.setText(date)
 
-
-
-
-        /*surDtTiTxtInpEditTxt.value = date*/
-
-        /*getButton.setOnClickListener {
-
-            lifecycleScope.launch {
-                patientAppDB?.getPatientDataList()?.collect { patientDataList ->
-                    if (patientDataList.isNotEmpty()) {
-                        patientDataList.forEach {
-                            println(it.patient_id)
-                            println(it.patient_name)
-                            println(it.patient_email)
-                            println(it.patient_hair_type)
-                        }
-                    }
-                }
-            }
-
-        }*/
-
         patientPhotoButton.setOnClickListener {
 
-            val photoFile = File.createTempFile(
-                "IMG_",
-                ".jpg",
-                applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            )
+            val photoFile = File.createTempFile("IMG_", ".jpg",
+                applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
 
-            patientPhotoUri = FileProvider.getUriForFile(
-                applicationContext,
-                "${applicationContext.packageName}.provider",
-                photoFile
-            )
+            patientPhotoUri = FileProvider.getUriForFile(applicationContext,
+                "${applicationContext.packageName}.provider", photoFile)
 
             patientPhotoAbsolutePath = photoFile.absolutePath
             Log.e("photo-absolutePath", patientPhotoAbsolutePath.toString())
@@ -190,38 +154,15 @@ class MainActivity : AppCompatActivity() {
                 Log.e("abx", "Already Permission Granted ")
                 takePatientPhotoPicture.launch(patientPhotoUri)
             }
-
-            /*var fileName1 = ""
-            fileName1 = "IMG_8557864401318610507.jpg"
-
-            val dest: String = this@MainActivity.getExternalFilesDir(null).toString() + "/"
-            val imgFile = File("$dest/$fileName1")
-            if (!imgFile.exists()) {
-                imgFile.mkdir()
-            }
-
-            if (imgFile != null && imgFile.exists()) //Checking for the file is exist or not
-            {
-                val bitmap = BitmapFactory.decodeFile("/storage/emulated/0/Android/data/com.example.patientdataentry/files/Pictures/IMG_8557864401318610507.jpg")
-                setCrooppedImageView.setImageBitmap(bitmap)
-            }*/
-
-
         }
 
         patientScalpBeforeButton.setOnClickListener {
 
-            val photoBeforeScalpFile = File.createTempFile(
-                "IMG_",
-                ".jpg",
-                applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            )
+            val photoBeforeScalpFile = File.createTempFile("IMG_", ".jpg",
+                applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
 
-            patientBeforeScalpPhotoUri = FileProvider.getUriForFile(
-                applicationContext,
-                "${applicationContext.packageName}.provider",
-                photoBeforeScalpFile
-            )
+            patientBeforeScalpPhotoUri = FileProvider.getUriForFile(applicationContext,
+                "${applicationContext.packageName}.provider", photoBeforeScalpFile)
 
             beforeScalpAbsolutePath = photoBeforeScalpFile.absolutePath
             Log.e("photo-absolutePath", beforeScalpAbsolutePath.toString())
@@ -239,50 +180,65 @@ class MainActivity : AppCompatActivity() {
                 requestPermissions(REQUIRED_PERMISSIONS, BEFORE_SCALP_PERMISSION__REQUEST_CODE)
             }else{
                 Log.e("abx", "Already Permission Granted ")
-                takepatientBeforeScalpPhotoPicture.launch(patientPhotoUri)
+                takepatientBeforeScalpPhotoPicture.launch(patientBeforeScalpPhotoUri)
             }
-
         }
 
-//        patientScalpAfterButton.setOnClickListener {
-//
-//            val photoAfterScalpFile = File.createTempFile(
-//                "IMG_",
-//                ".jpg",
-//                applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-//            )
-//
-//            patientAfterScalpPhotoUri = FileProvider.getUriForFile(
-//                applicationContext,
-//                "${applicationContext.packageName}.provider",
-//                photoAfterScalpFile
-//            )
-//
-//            afterScalpAbsolutePath = photoAfterScalpFile.absolutePath
-//            Log.e("photo-absolutePath", afterScalpAbsolutePath.toString())
-//
-//            val name : String = photoAfterScalpFile.name
-//            Log.e("photo-name", name)
-//            val nameWithoutExtension : String = photoAfterScalpFile.nameWithoutExtension
-//            Log.e("photo-nameWithoutExt", nameWithoutExtension)
-//            val path : String = photoAfterScalpFile.path
-//            Log.e("photo-path", path)
-//
-//            val isAllowPermission = allPermissionsGranted()
-//            Log.e("abx", "Permission Granted $isAllowPermission")
-//            if (!isAllowPermission){
-//                requestPermissions(REQUIRED_PERMISSIONS, AFTER_SCALP_PERMISSION_REQUEST_CODE)
-//            }else{
-//                Log.e("abx", "Already Permission Granted ")
-//                takepatientAterScalpPhotoPicture.launch(patientAfterScalpPhotoUri)
-//            }
-//
-//        }
+        patientLeftScalpBeforeButton.setOnClickListener {
 
-//        patientUploadScreenshotButton.setOnClickListener {
-//            pickImage.launch("image/*")
-//        }
+            val photoBeforeLeftScalpFile = File.createTempFile("IMG_", ".jpg",
+                applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
 
+            patientBeforeLeftScalpPhotoUri = FileProvider.getUriForFile(applicationContext,
+                "${applicationContext.packageName}.provider", photoBeforeLeftScalpFile)
+
+            beforeLeftScalpAbsolutePath = photoBeforeLeftScalpFile.absolutePath
+            Log.e("photo-absolutePath", beforeScalpAbsolutePath.toString())
+
+            val name : String = photoBeforeLeftScalpFile.name
+            Log.e("photo-name", name)
+            val nameWithoutExtension : String = photoBeforeLeftScalpFile.nameWithoutExtension
+            Log.e("photo-nameWithoutExt", nameWithoutExtension)
+            val path : String = photoBeforeLeftScalpFile.path
+            Log.e("photo-path", path)
+
+            val isAllowPermission = allPermissionsGranted()
+            Log.e("abx", "Permission Granted $isAllowPermission")
+            if (!isAllowPermission){
+                requestPermissions(REQUIRED_PERMISSIONS, BEFORE_LEFT_SCALP_PERMISSION__REQUEST_CODE)
+            }else{
+                Log.e("abx", "Already Permission Granted ")
+                takepatientBeforeLeftScalpPhotoPicture.launch(patientBeforeLeftScalpPhotoUri)
+            }
+        }
+
+        patientRightScalpBeforeButton.setOnClickListener {
+
+            val photoBeforeRightScalpFile = File.createTempFile("IMG_", ".jpg",
+                applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+
+            patientBeforeRightScalpPhotoUri = FileProvider.getUriForFile(applicationContext,
+                "${applicationContext.packageName}.provider", photoBeforeRightScalpFile)
+
+            beforeRightScalpAbsolutePath = photoBeforeRightScalpFile.absolutePath
+            Log.e("photo-absolutePath", beforeScalpAbsolutePath.toString())
+
+            val name : String = photoBeforeRightScalpFile.name
+            Log.e("photo-name", name)
+            val nameWithoutExtension : String = photoBeforeRightScalpFile.nameWithoutExtension
+            Log.e("photo-nameWithoutExt", nameWithoutExtension)
+            val path : String = photoBeforeRightScalpFile.path
+            Log.e("photo-path", path)
+
+            val isAllowPermission = allPermissionsGranted()
+            Log.e("abx", "Permission Granted $isAllowPermission")
+            if (!isAllowPermission){
+                requestPermissions(REQUIRED_PERMISSIONS, BEFORE_RIGHT_SCALP_PERMISSION__REQUEST_CODE)
+            }else{
+                Log.e("abx", "Already Permission Granted ")
+                takepatientBeforeRightScalpPhotoPicture.launch(patientBeforeRightScalpPhotoUri)
+            }
+        }
 
         saveButton.setOnClickListener {
 
@@ -301,12 +257,11 @@ class MainActivity : AppCompatActivity() {
             val getSurgPlanSuggTxtInpEditTxt = surgPlanSuggTxtInpEditTxt.text.toString()
             val getSurgPlanOptTxtInpEditTxt = surgPlanOptTxtInpEditTxt.text.toString()
             val getSurDtTiTxtInpEditTxt = surDtTiTxtInpEditTxt.text.toString()
-           /* val getValue1TxtInpEditTxt = value1TxtInpEditTxt.text.toString()
-            val getValue2TxtInpEditTxt = value2TxtInpEditTxt.text.toString()*/
 
             val patientPhotoFile = File(patientPhotoAbsolutePath)
             val beforeScalpPhotoFile = File(beforeScalpAbsolutePath)
-//            val afterScalpPhotoFile = File(afterScalpAbsolutePath)
+            val beforeLeftScalpPhotoFile = File(beforeLeftScalpAbsolutePath)
+            val beforeRightScalpPhotoFile = File(beforeRightScalpAbsolutePath)
 
             if (getNameTxtInpEditTxt.isBlank()){
                 //nameTxtInputLayout.setError("Patient Name Should not be blank")
@@ -332,10 +287,10 @@ class MainActivity : AppCompatActivity() {
             } else if (getBaldnessTxtInpEditTxt.isBlank()){
                 baldnessTxtInpEditTxt.setError("Baldness Grade Should not be blank")
                 Toast.makeText(this@MainActivity, "Baldness Grade Should not be blank", Toast.LENGTH_SHORT).show()
-            } else if (getHairTypeTxtInpEditTxt.isBlank()){
+            } /*else if (getHairTypeTxtInpEditTxt.isBlank()){
                 hairTypeTxtInpEditTxt.setError("Hair Type Should not be blank")
                 Toast.makeText(this@MainActivity, "Hair Type Should not be blank", Toast.LENGTH_SHORT).show()
-            } else if (getSurgPlanSuggTxtInpEditTxt.isBlank()){
+            }*/ else if (getSurgPlanSuggTxtInpEditTxt.isBlank()){
                 surgPlanSuggTxtInpEditTxt.setError("Surgical Plan Suggested Should not be blank")
                 Toast.makeText(this@MainActivity, "Surgical Plan Suggested Should not be blank", Toast.LENGTH_SHORT).show()
             } else if (getSurgPlanOptTxtInpEditTxt.isBlank()){
@@ -345,263 +300,122 @@ class MainActivity : AppCompatActivity() {
                 surDtTiTxtInpEditTxt.setError("Surgery Date and Time Should not be blank")
                 Toast.makeText(this@MainActivity, "Surgery Date and Time Should not be blank", Toast.LENGTH_SHORT).show()
             } else if (beforeScalpAbsolutePath == "" || beforeScalpPhotoFile.length() == 0L){
-                Toast.makeText(this@MainActivity, "Please capture Before Scalp Photo", Toast.LENGTH_SHORT).show()
-            } /*else if (afterScalpAbsolutePath == "" || afterScalpPhotoFile.length() == 0.toLong()){
-                Toast.makeText(this@MainActivity, "Please capture After Scalp Photo", Toast.LENGTH_SHORT).show()
-            } else if (getValue1TxtInpEditTxt.isBlank()){
-                value1TxtInpEditTxt.setError("Value 1 Should not be blank")
-                Toast.makeText(this@MainActivity, "Value 1 Should not be blank", Toast.LENGTH_SHORT).show()
-            } else if (getValue2TxtInpEditTxt.isBlank()){
-                value2TxtInpEditTxt.setError("Value 2 Should not be blank")
-                Toast.makeText(this@MainActivity, "Value 2 Should not be blank", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Please capture Front Scalp Photo", Toast.LENGTH_SHORT).show()
+            } /*else if (beforeLeftScalpAbsolutePath == "" || beforeLeftScalpPhotoFile.length() == 0L){
+                Toast.makeText(this@MainActivity, "Please capture Left Scalp Photo", Toast.LENGTH_SHORT).show()
+            } else if (beforeRightScalpAbsolutePath == "" || beforeRightScalpPhotoFile.length() == 0L){
+                Toast.makeText(this@MainActivity, "Please capture Right Scalp Photo", Toast.LENGTH_SHORT).show()
             }*/ else{
 
                 lifecycleScope.launch {
 
-//                    var fileName1 = ""
-//                    val document = Document()
-//                    //fileName1 = "TEST" + ".pdf"
-//
-//                    var txtId: String = Random(System.currentTimeMillis()).nextInt(99999).toString()
-//                    fileName1 = "$getNameTxtInpEditTxt$txtId.pdf"
-//                    val dest: String = this@MainActivity.getExternalFilesDir(null).toString() + "/"
-//                    val dir = File(dest)
-//                    if (!dir.exists()) dir.mkdirs()
-//
-//                    try {
-//                        val file = File(dest, fileName1)
-//                        file.createNewFile()
-//                        val fOut = FileOutputStream(file, false)
-//                        val writer = PdfWriter.getInstance(document, fOut)
-//
-//                        document.open();
-//
-//                        val gender = radioButton.text.toString()
-//                        document.add(Paragraph("Patient Name :- $getNameTxtInpEditTxt"))
-//                        document.add(Paragraph("Patient Age  :- $getAgeTxtInpEditTxt"))
-//                        document.add(Paragraph("Patient Gender :- $gender"))
-//                        document.add(Paragraph("Patient Mobile Number :- $getMbNoTxtInpEditTxt"))
-//                        document.add(Paragraph("Patient Email-Id :- $getEmailTxtInpEditTxt"))
-//                        document.add(Paragraph("Doctor Name :- $getDocNameTxtInpEditTxt"))
-//                        document.add(Paragraph("Doctor Email-Id :- $getDocEmailTxtInpEditTxt"))
-//                        document.add(Paragraph("Baldness Grade :-  $getBaldnessTxtInpEditTxt"))
-//                        document.add(Paragraph("Hair Type :- $getHairTypeTxtInpEditTxt"))
-//                        document.add(Paragraph("Surgical Plan Suggested :- $getSurgPlanSuggTxtInpEditTxt"))
-//                        document.add(Paragraph("Surgical Plan Opted $getSurgPlanOptTxtInpEditTxt"))
-//                        document.add(Paragraph("Surgery Date and Time $getSurDtTiTxtInpEditTxt"))
-//                        /*document.add(Paragraph("Value 1 :- $getValue1TxtInpEditTxt"))
-//                        document.add(Paragraph("Value 2 :- $getValue2TxtInpEditTxt"))*/
-//
-//                        document.newPage()
-//
-//                        val patientPhotoFile = File(patientPhotoAbsolutePath)
-//                        val beforeScalpPhotoFile = File(beforeScalpAbsolutePath)
-//                        val afterScalpPhotoFile = File(afterScalpAbsolutePath)
-//                        if (patientPhotoFile.length() > 0) {
-//                            patientPhotoBitmap = BitmapFactory.decodeFile(patientPhotoAbsolutePath)
-//                            patientImage = patientPhotoBitmap.let { convertBitmapToByteArray(it) }
-//                            document.add(patientImage)
-//                            document.newPage()
-//                        } else {
-//                            Log.v("patientPhotoFile", "patientPhotoFile is null or empty")
-//                        }
-//
-//                        if (beforeScalpPhotoFile.length() > 0){
-//                            beforeScalpBitmap = BitmapFactory.decodeFile(beforeScalpAbsolutePath)
-//                            beforeScalpImage = beforeScalpBitmap.let { convertBitmapToByteArray(it) }
-//                            document.add(beforeScalpImage)
-//                            document.newPage()
-//                        } else {
-//                            Log.v("beforeScalpPhotoFile", "beforeScalpPhotoFile is null or empty")
-//                        }
-//
-//                        if (afterScalpPhotoFile.length() > 0){
-//                            afterScalpBitmap = BitmapFactory.decodeFile(afterScalpAbsolutePath)
-//                            afterScalpImage = afterScalpBitmap.let { convertBitmapToByteArray(it) }
-//                            document.add(afterScalpImage)
-//                            document.newPage()
-//                        } else {
-//                            Log.v("afterScalpPhotoFile", "afterScalpPhotoFile is null or empty")
-//                        }
-//
-//                        if (imagePickedScreenshotUri != null && !Uri.EMPTY.equals(imagePickedScreenshotUri)) {
-//                            //doTheThing()
-//                            Log.v("pickedScreenpUri", "Available")
-//                            val ScreenshotBitmap = getBitmap(contentResolver, imagePickedScreenshotUri)
-//                            screenshotImage = ScreenshotBitmap?.let { convertBitmapToByteArray(it) }
-//                            document.add(screenshotImage)
-//                            document.newPage()
-//                        } else {
-//                            Log.v("pickedScreenpUri", "is null or empty")
-//                        }
-//
-//                        /* if (imagePickedScreenshotUri != null){
-//                             val ScreenshotBitmap = getBitmap(contentResolver, imagePickedScreenshotUri)
-//                             screenshotImage = ScreenshotBitmap?.let { convertBitmapToByteArray(it) }
-//                             document.add(screenshotImage)
-//                             document.newPage()
-//                         }*/
-//
-//                        document.close();
-//
-//                    } catch (e: DocumentException) {
-//                        e.printStackTrace()
-//                        Log.v("PdfError", e.toString())
-//                    } catch (e: FileNotFoundException) {
-//                        e.printStackTrace()
-//                        Log.v("PdfError", e.toString())
-//                    } catch (e: IOException) {
-//                        e.printStackTrace()
-//                        Log.v("PdfError", e.toString())
-//                    }
+                    try {
 
-                    /*var pdfFilePath = "$dest/$fileName1"
-                    Log.v("pdfFilePath", pdfFilePath)
+                        val patientDataItem = PatientDataEntity(0,"",
+                            getNameTxtInpEditTxt ?: "", getAgeTxtInpEditTxt.toInt() ?: 0, radioButton.text.toString() ?: "",
+                            getMbNoTxtInpEditTxt ?: "", getEmailTxtInpEditTxt ?: "",patientPhotoAbsolutePath ?: "",
+                            getDocNameTxtInpEditTxt ?: "", getDocEmailTxtInpEditTxt ?: "", getBaldnessTxtInpEditTxt ?: "",
+                            getHairTypeTxtInpEditTxt ?: "",getSurgPlanSuggTxtInpEditTxt ?: "",
+                            getSurgPlanOptTxtInpEditTxt ?: "",beforeScalpAbsolutePath ?: "",
+                            beforeLeftScalpAbsolutePath?: "", beforeRightScalpAbsolutePath?: "",
+                            "",getSurDtTiTxtInpEditTxt ?: "", "",
+                            "", "", "","")
 
-                    val pdfFile = File("$dest/$fileName1")
-                    if (!pdfFile.exists()) {
-                        pdfFile.mkdir()
+                        patientAppDB?.insert(patientDataItem)
+
+                        nameTxtInpEditTxt.setText("")
+                        ageTxtInpEditTxt.setText("")
+
+                        mbNoTxtInpEditTxt.setText("")
+                        emailTxtInpEditTxt.setText("")
+                        docNameTxtInpEditTxt.setText("")
+                        docEmailTxtInpEditTxt.setText("")
+                        baldnessTxtInpEditTxt.setText("")
+                        hairTypeTxtInpEditTxt.setText("")
+                        surgPlanSuggTxtInpEditTxt.setText("")
+                        surgPlanOptTxtInpEditTxt.setText("")
+                        surDtTiTxtInpEditTxt.setText("")
+
+                        setProfilePhotoImageView.setImageURI(null)
+                        setProfilePhotoImageView.visibility = View.GONE
+                        setBeforeScalpImageView.setImageURI(null)
+                        setBeforeScalpImageView.visibility = View.GONE
+
+                        saveButton.setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.white))
+                        saveButton.isEnabled = false
+                        openBlynkAppButton.visibility = View.VISIBLE
+                        openHotspotButton.visibility = View.VISIBLE
+
+                    }catch (e:Exception){
+                        Toast.makeText(this@MainActivity,"Opps something went wrong!! ${e.message}",Toast.LENGTH_SHORT).show()
                     }
-                    if (pdfFile != null && pdfFile.exists()) //Checking for the file is exist or not
-                    {
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        val mURI: Uri = FileProvider.getUriForFile(
-                            this@MainActivity, this@MainActivity.getApplicationContext()
-                                .getPackageName().toString() + ".provider", pdfFile
-                        )
-                        intent.setDataAndType(mURI, "application/pdf")
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        try {
-                            this@MainActivity.startActivity(intent)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    } else {
-                        Toast.makeText(this@MainActivity, "The file not exists! ", Toast.LENGTH_SHORT)
-                            .show()
-                    }*/
-
-                    val patientDataItem = PatientDataEntity(0,"",
-                        getNameTxtInpEditTxt ?: "", getAgeTxtInpEditTxt.toInt() ?: 0, radioButton.text.toString() ?: "",
-                        getMbNoTxtInpEditTxt ?: "", getEmailTxtInpEditTxt ?: "",patientPhotoAbsolutePath ?: "",
-                        getDocNameTxtInpEditTxt ?: "", getDocEmailTxtInpEditTxt ?: "", getBaldnessTxtInpEditTxt ?: "",
-                        getHairTypeTxtInpEditTxt ?: "",getSurgPlanSuggTxtInpEditTxt ?: "",
-                        getSurgPlanOptTxtInpEditTxt ?: "",beforeScalpAbsolutePath ?: "",
-                        "", getSurDtTiTxtInpEditTxt ?: "",
-                        "", "", "", "")
-
-                    patientAppDB?.insert(patientDataItem)
-
-                    nameTxtInpEditTxt.setText("")
-                    ageTxtInpEditTxt.setText("")
-
-                    mbNoTxtInpEditTxt.setText("")
-                    emailTxtInpEditTxt.setText("")
-                    docNameTxtInpEditTxt.setText("")
-                    docEmailTxtInpEditTxt.setText("")
-                    baldnessTxtInpEditTxt.setText("")
-                    hairTypeTxtInpEditTxt.setText("")
-                    surgPlanSuggTxtInpEditTxt.setText("")
-                    surgPlanOptTxtInpEditTxt.setText("")
-                    surDtTiTxtInpEditTxt.setText("")
-                    /*value1TxtInpEditTxt.setText("")
-                    value2TxtInpEditTxt.setText("")*/
-
-                    setProfilePhotoImageView.setImageURI(null)
-                    setProfilePhotoImageView.visibility = View.GONE
-                    setBeforeScalpImageView.setImageURI(null)
-                    setBeforeScalpImageView.visibility = View.GONE
-                    /*setAfterScalpImageView.setImageURI(null)
-                    setAfterScalpImageView.visibility = View.GONE
-                    setUploadScreenshotImageView.setImageURI(null)
-                    setUploadScreenshotImageView.visibility = View.GONE*/
-
-                    /*val blynkAppMarketLink = "market://details?id=cloud.blynk"
-
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.setData(Uri.parse(blynkAppMarketLink))
-                    startActivity(intent)*/
-
-                    startNewApplication(this@MainActivity, "cloud.blynk")
-//        openApp(this@MainActivity, "Blynk IoT", "cloud.blynk")
-
-                    /*val blynkAppMarketLink = "market://details?id=cloud.blynk"
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.setData(Uri.parse(blynkAppMarketLink))
-                    startActivity(intent)*/
-
-                    finish()
                 }
             }
         }
 
-        /*val bitmap1 = BitmapFactory.decodeFile("/storage/emulated/0/Android/data/com.example.patientdataentry/files/Pictures/IMG_9019131565039713377.jpg")
-        setProfilePhotoImageView.visibility = View.VISIBLE
-        setProfilePhotoImageView.setImageBitmap(bitmap1)
+        openHotspotButton.setOnClickListener {
+            activeTethering()
+        }
 
-        val bitmap2 = BitmapFactory.decodeFile("/storage/emulated/0/Android/data/com.example.patientdataentry/files/Pictures/IMG_3269560358304437075.jpg")
-        setBeforeScalpImageView.visibility = View.VISIBLE
-        setBeforeScalpImageView.setImageBitmap(bitmap2)
-
-        val bitmap3 = BitmapFactory.decodeFile("/storage/emulated/0/Android/data/com.example.patientdataentry/files/Pictures/IMG_5736689874160266018.jpg")
-        setAfterScalpImageView.visibility = View.VISIBLE
-        setAfterScalpImageView.setImageBitmap(bitmap3)
-
-        setUploadScreenshotImageView.visibility = View.VISIBLE
-        setUploadScreenshotImageView.setImageURI(Uri.parse("content://media/external/images/media/641"))*/
+        openBlynkAppButton.setOnClickListener {
+            if (isNetworkAvailable(this@MainActivity)){
+                startNewApplication(this@MainActivity, "cloud.blynk")
+                finish()
+            }else{
+                displayInternetSnackBar(mParentConstraintLayout)
+            }
+        }
     }
 
     private val takePatientPhotoPicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
         if (isSaved) {
             Log.e("abx", "aserfd $isSaved")
-            /*cropImageView.visibility = View.VISIBLE
-            cropImageView.setImageUriAsync(patientPhotoUri)*/
-
-            setProfilePhotoImageView.visibility = View.VISIBLE
-            setProfilePhotoImageView.setImageURI(patientPhotoUri)
+            /*setProfilePhotoImageView.visibility = View.VISIBLE
+            setProfilePhotoImageView.setImageURI(patientBeforeScalpPhotoUri)*/
+            invokeAltertDialogForCropping(patientPhotoUri, setProfilePhotoImageView, "PatientProfilePhoto")
         }
     }
 
     private val takepatientBeforeScalpPhotoPicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
         if (isSaved) {
             Log.e("abx", "aserfd $isSaved")
-            setBeforeScalpImageView.visibility = View.VISIBLE
-            setBeforeScalpImageView.setImageURI(patientBeforeScalpPhotoUri)
+           /* setBeforeScalpImageView.visibility = View.VISIBLE
+            setBeforeScalpImageView.setImageURI(patientBeforeScalpPhotoUri)*/
+            invokeAltertDialogForCropping(patientBeforeScalpPhotoUri, setBeforeScalpImageView, "PatientBeforeScalpPhoto")
         }
     }
 
-    /*private val takepatientAterScalpPhotoPicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
+    private val takepatientBeforeLeftScalpPhotoPicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
         if (isSaved) {
-            Log.e("abx", "aserfd $isSaved")
-            setAfterScalpImageView.visibility = View.VISIBLE
-            setAfterScalpImageView.setImageURI(patientAfterScalpPhotoUri)
+            invokeAltertDialogForCropping(patientBeforeLeftScalpPhotoUri, setBeforeLeftScalpImageView, "PatientBeforeLeftScalpPhoto")
         }
-    }*/
+    }
 
-   /* var pickImage =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uriResult ->
-            uriResult?.let {
-                Log.e("pickImage", "Image picked " + uriResult)
-                imagePickedScreenshotUri = uriResult
-                Log.e("pickImage", "Image picked " + imagePickedScreenshotUri.toString())
-                setUploadScreenshotImageView.setImageURI(imagePickedScreenshotUri)
-                //setCrooppedImageView.setImageURI(Uri.parse("content://media/external/images/media/80831"))
-                //set this URI to imageview then get bitmap or get directly bitmap store in PDF
+    private val takepatientBeforeRightScalpPhotoPicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
+        if (isSaved) {
+            invokeAltertDialogForCropping(patientBeforeRightScalpPhotoUri, setBeforeRightScalpImageView, "PatientBeforeRightScalpPhoto")
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            R.id.action_getlist -> {
+                val intent = Intent(this@MainActivity,GetPatientListData::class.java)
+                startActivity(intent)
             }
-        }*/
-
-    private lateinit var byteArray: ByteArray
-    private fun convertBitmapToByteArray(bitmap: Bitmap): Image {
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, stream)
-        byteArray = stream.toByteArray()
-        byteArray = byteArray.copyOf(256)
-
-        val image = Image.getInstance(stream.toByteArray())
-        image.scalePercent(22F)
-        image.alignment = Element.ALIGN_LEFT
-
-        return image
+           /* R.id.action_systemconfig -> Toast.makeText(this,"Sytem Config Selected",Toast.LENGTH_SHORT).show()
+            R.id.action_about -> Toast.makeText(this,"About Selected",Toast.LENGTH_SHORT).show()*/
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun allPermissionsGranted(): Boolean {
@@ -620,9 +434,6 @@ class MainActivity : AppCompatActivity() {
                 Log.e("abx", "Already Permission Granted ")
                 //if (permissionDocumentType == 2) {
                 takePatientPhotoPicture.launch(patientPhotoUri)
-
-                /*cropImageView.setImageBitmap(null)
-                setCropImageView.setImageBitmap(null)*/
                 //}
             }
             return
@@ -632,133 +443,183 @@ class MainActivity : AppCompatActivity() {
                 Log.e("abx", "Already Permission Granted ")
                 //if (permissionDocumentType == 2) {
                 takepatientBeforeScalpPhotoPicture.launch(patientBeforeScalpPhotoUri)
-
-                /*cropImageView.setImageBitmap(null)
-                setCropImageView.setImageBitmap(null)*/
                 //}
             }
             return
         }
-        /*if (requestCode == AFTER_SCALP_PERMISSION_REQUEST_CODE) {
+        if (requestCode == BEFORE_LEFT_SCALP_PERMISSION__REQUEST_CODE) {
             if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.e("abx", "Already Permission Granted ")
                 //if (permissionDocumentType == 2) {
-                takepatientAterScalpPhotoPicture.launch(patientAfterScalpPhotoUri)
-
+                takepatientBeforeLeftScalpPhotoPicture.launch(patientBeforeLeftScalpPhotoUri)
+                //}
             }
             return
-        }*/
-    }
-
-
-
-    fun getBitmap(contentResolver: ContentResolver, fileUri: Uri?): Bitmap? {
-        return try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, fileUri!!))
-            } else {
-                MediaStore.Images.Media.getBitmap(contentResolver, fileUri)
+        }
+        if (requestCode == BEFORE_RIGHT_SCALP_PERMISSION__REQUEST_CODE) {
+            if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("abx", "Already Permission Granted ")
+                //if (permissionDocumentType == 2) {
+                takepatientBeforeRightScalpPhotoPicture.launch(patientBeforeRightScalpPhotoUri)
+                //}
             }
-        } catch (e: Exception){
-            null
+            return
         }
     }
-
-    /* val requestMultiplePermissions = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        permissions.entries.forEach {
-            Log.d("DEBUG", "${it.key} = ${it.value}")
-        }
-    }*/
-
-    /*requestMultiplePermissions.launch(
-        arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-    )*/
-
-    /*val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            // PERMISSION GRANTED
-        } else {
-            // PERMISSION NOT GRANTED
-        }
-    }
-
-    // Ex. Launching ACCESS_FINE_LOCATION permission.
-    private fun startLocationPermissionRequest() {
-        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-    }*/
 
     fun getCurrentDate():String{
-        val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm a")
-       /* val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")*/
+        val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm aaa")
         return sdf.format(Date())
     }
 
-
-    fun startNewActivity(context: Context, packageName: String) {
-        var intent: Intent? = context.getPackageManager().getLaunchIntentForPackage(packageName)
-        if (intent == null) {
-            // Bring user to the market or let them choose an app?
-            intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse("market://details?id=$packageName")
-        }
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
-    }
-
     fun startNewApplication(context: Context, packageName: String) {
-        var intent = context.packageManager.getLaunchIntentForPackage(packageName)
-        if (intent != null) {
-            // We found the activity now start the activity
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        } else {
-            // Bring user to the market or let them choose an app?
-            intent = Intent(Intent.ACTION_VIEW)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.data = Uri.parse("market://details?id=$packageName")
-            context.startActivity(intent)
+
+        try {
+            var intent = context.packageManager.getLaunchIntentForPackage(packageName)
+            if (intent != null) {
+                // We found the activity now start the activity
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            } else {
+                // Bring user to the market or let them choose an app?
+                intent = Intent(Intent.ACTION_VIEW)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.data = Uri.parse("market://details?id=$packageName")
+                context.startActivity(intent)
+            }
+        }catch (e:Exception){
+            Toast.makeText(this@MainActivity,"Issue opening with cloud.blynk App ${e.message}",Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun openApp(context: Context, appName: String, packageName: String?) {
-        if (isAppInstalled(context, packageName!!))
-            if (isAppEnabled(context, packageName))
-                context.startActivity(context.packageManager.getLaunchIntentForPackage(packageName))
-            else
-                Toast.makeText(context, "$appName app is not enabled.", Toast.LENGTH_SHORT).show()
-        else
-            Toast.makeText(context, "$appName app is not installed.", Toast.LENGTH_SHORT).show()
+    private fun invokeAltertDialogForCropping(imageUri: Uri?, imageView: ImageView, imagePointsTo : String) {
+
+        val dialog = Dialog(this@MainActivity)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_alter_dialog)
+        dialog.getWindow()?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        dialog.setTitle("Crop Image")
+        dialog.setCancelable(false)
+
+        val cropImage = dialog.findViewById(R.id.dialog_cropImageView) as CropImageView
+        val cropButton = dialog.findViewById(R.id.dialog_crop_image_button) as Button
+
+        cropImage.setImageUriAsync(imageUri)
+
+        cropButton.setOnClickListener {
+            val mCroppedPhotoBitmap : Bitmap? = cropImage.croppedImage
+
+            imageView.visibility = View.VISIBLE
+            imageView.setImageBitmap(mCroppedPhotoBitmap)
+
+            val getProfilePhotoPath : String? = getAbsolutePathOfBitmapFile(mCroppedPhotoBitmap)
+            Log.e("ImageCheck", "Profile Photo $getProfilePhotoPath")
+
+            when(imagePointsTo){
+                "PatientProfilePhoto" -> {
+                    Log.e("ImageCheck", "x == previous $patientPhotoAbsolutePath")
+                    patientPhotoAbsolutePath = getProfilePhotoPath
+                    Log.e("ImageCheck", "x == Now $patientPhotoAbsolutePath")
+                }
+                "PatientBeforeScalpPhoto" -> {
+                    Log.e("ImageCheck", "x == previous $beforeScalpAbsolutePath")
+                    beforeScalpAbsolutePath = getProfilePhotoPath
+                    Log.e("ImageCheck", "x == Now $beforeScalpAbsolutePath")
+                }
+                "PatientBeforeLeftScalpPhoto" -> {
+                    Log.e("ImageCheck", "x == previous $beforeLeftScalpAbsolutePath")
+                    beforeLeftScalpAbsolutePath = getProfilePhotoPath
+                    Log.e("ImageCheck", "x == Now $beforeLeftScalpAbsolutePath")
+                }
+                "PatientBeforeRightScalpPhoto" -> {
+                    Log.e("ImageCheck", "x == previous $beforeRightScalpAbsolutePath")
+                    beforeRightScalpAbsolutePath = getProfilePhotoPath
+                    Log.e("ImageCheck", "x == Now $beforeRightScalpAbsolutePath")
+                }
+                else -> {
+                    Log.e("ImageCheck", "x is neither 1 nor 2")
+                }
+            }
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
-    private fun isAppInstalled(context: Context, packageName: String): Boolean {
-        val pm = context.packageManager
-        try {
-            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
-            return true
-        } catch (ignored: PackageManager.NameNotFoundException) {
+    private fun getAbsolutePathOfBitmapFile(mCroppedPhotoBitmap: Bitmap?): String? {
+
+        var tempFileAbsolutePath: String? = ""
+
+        var bitmapTempFile = File.createTempFile("IMG_", ".jpg",
+            applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+
+        var tempPhotoUri : Uri? = FileProvider.getUriForFile(applicationContext,
+            "${applicationContext.packageName}.provider", bitmapTempFile)
+
+        tempFileAbsolutePath = bitmapTempFile.absolutePath
+        Log.e("photo-absolutePath", tempFileAbsolutePath.toString())
+
+        val name: String = bitmapTempFile.name
+        Log.e("photo-name", name)
+
+        val tempFile = File.createTempFile("IMG_", ".jpg")
+        val bytes = ByteArrayOutputStream()
+        mCroppedPhotoBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val bitmapData = bytes.toByteArray()
+
+        val fileOutPut = FileOutputStream(bitmapTempFile)
+        fileOutPut.write(bitmapData)
+        fileOutPut.flush()
+        fileOutPut.close()
+
+        // if you want to return uri then use below line of code
+        //return Uri.fromFile(tempFile) & return method as Uri
+
+        return tempFileAbsolutePath
+    }
+
+    private fun activeTethering() {
+        val tetherSettings = Intent()
+        tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings")
+        startActivity(tetherSettings)
+    }
+
+    fun isNetworkAvailable(context: Context?): Boolean {
+        if (context == null) return false
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        return true
+                    }
+                }
+            }
+        } else {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                return true
+            }
         }
         return false
     }
 
-    private fun isAppEnabled(context: Context, packageName: String): Boolean {
-        var appStatus = false
-        try {
-            val ai = context.packageManager.getApplicationInfo(packageName, 0)
-            if (ai != null) {
-                appStatus = ai.enabled
-            }
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-        return appStatus
+    fun displayInternetSnackBar(view: View){
+        //Snackbar(view)
+        val snackbar = Snackbar.make(view, "Oops! Seems you don’t have working internet connection", Snackbar.LENGTH_LONG).setAction("Action", null)
+        snackbar.setActionTextColor(Color.RED)
+        val snackbarView = snackbar.view
+        snackbarView.setBackgroundColor(Color.RED)
+        val textView = snackbarView.findViewById(R.id.snackbar_text) as TextView
+        textView.setTextColor(Color.WHITE)
+        textView.textSize = 14f
+        snackbar.show()
     }
 
     /*val patientDataItem = PatientDataEntity(0,"",
@@ -770,21 +631,4 @@ class MainActivity : AppCompatActivity() {
         afterScalpAbsolutePath ?: "", getSurDtTiTxtInpEditTxt ?: "",
         getValue1TxtInpEditTxt ?: "", getValue2TxtInpEditTxt ?: "",
         imagePickedScreenshotUri.toString()?: "", pdfFilePath ?: "")*/
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main,menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
-            R.id.action_getlist -> {
-                val intent = Intent(this@MainActivity,GetPatientListData::class.java)
-                startActivity(intent)
-            }
-            R.id.action_systemconfig -> Toast.makeText(this,"Sytem Config Selected",Toast.LENGTH_SHORT).show()
-            R.id.action_about -> Toast.makeText(this,"About Selected",Toast.LENGTH_SHORT).show()
-        }
-        return super.onOptionsItemSelected(item)
-    }
 }

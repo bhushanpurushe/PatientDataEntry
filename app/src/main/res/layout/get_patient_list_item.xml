@@ -10,8 +10,8 @@
         android:id="@+id/patientlist_linearlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/pinkColor"
         android:orientation="vertical"
+        android:background="@color/pinkColor"
         android:padding="5dp">
 
         <TextView
@@ -28,19 +28,19 @@
             android:id="@+id/tvEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:paddingBottom="4dp"
-            android:text="Gaurav@gmail.com "
-            android:textColor="@color/colorPrimary" />
+            android:paddingStart="4dp"
+            android:textColor="@color/colorPrimary"
+            android:text="Gaurav@gmail.com " />
 
         <TextView
             android:id="@+id/tvDocFullName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:paddingBottom="4dp"
+            android:paddingStart="4dp"
             android:text="Gaurav "
             android:textColor="@color/colorPrimary"
             android:textStyle="bold" />
@@ -49,11 +49,11 @@
             android:id="@+id/tvDocEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:paddingBottom="4dp"
-            android:text="Gaurav@gmail.com "
-            android:textColor="@color/colorPrimary" />
+            android:paddingStart="4dp"
+            android:textColor="@color/colorPrimary"
+            android:text="Gaurav@gmail.com " />
 
     </LinearLayout>
 

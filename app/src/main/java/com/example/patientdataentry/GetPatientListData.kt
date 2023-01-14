@@ -1,10 +1,8 @@
 package com.example.patientdataentry
 
 import android.content.Intent
-import android.graphics.Movie
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,12 +32,9 @@ class GetPatientListData : AppCompatActivity() {
                 if (patientDataList.isNotEmpty()) {
 
                     val adapter = GetPatientListAdapter(patientDataList) { it ->
-                        // Here we'll receive callback of
-                        // every recyclerview item click
-                        // Now, perform any action here.
-                        // for ex: navigate to different screen
+                        // Here we'll receive callback of every recyclerview item click
+                        // Now, perform any action here.  for ex: navigate to different screen
                         //Toast.makeText(this@GetPatientListData, "Item Clicked ${it.patient_id}", Toast.LENGTH_SHORT).show()
-
                         val intent = Intent(this@GetPatientListData, GetPatientListDataDetails::class.java)
                         // To pass any data to next activity
                         intent.putExtra("patient_id", it.patient_id)
@@ -51,17 +46,12 @@ class GetPatientListData : AppCompatActivity() {
                     // Setting the Adapter with the recyclerview
                     recyclerview.adapter = adapter
 
-                    /*patientDataList.forEach {
-                        println(it.patient_id)
+                    /*patientDataList.forEach { println(it.patient_id)
                         println(it.patient_name)
-                        println(it.patient_email)
-                        println(it.patient_hair_type)
                     }*/
                 }
             }
         }
-
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -72,5 +62,4 @@ class GetPatientListData : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
 }

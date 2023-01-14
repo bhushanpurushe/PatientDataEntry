@@ -12,6 +12,7 @@
     <string name="labelpatientemail">Enter EmailId</string>
     <string name="lblpatientemail">EmailId</string>
     <string name="patient_photo">Click Patient Photo</string>
+    <string name="crop_photo">Crop Image</string>
     <string name="labeldoctorname">Enter Doctor Name</string>
     <string name="lbldoctorname">Doctor Name</string>
     <string name="labeldoctoremail">Enter Doctor Email</string>
@@ -25,14 +26,21 @@
     <string name="labelsurgicalPlanOpted">Select Surgical Plan Opted</string>
     <string name="lblsurgicalPlanOpted">Surgical Plan Opted</string>
     <string name="labelsurgeryDtTi">Surgery Date</string>
+    <string name="labelsurgeryEndDtTi">Surgery End Date</string>
     <string name="before_scalp_photo">Click Scalp Photo</string>
-    <string name="after_scalp_photo">Click Scalp Photo</string>
+    <string name="before_left_scalp_photo">Click Left Scalp Photo</string>
+    <string name="before_right_scalp_photo">Click Right Scalp Photo</string>
+    <string name="after_scalp_photo">Click After Scalp Photo</string>
     <string name="labelvalue1">Grafts Extracted</string>
     <string name="labelvalue2">Grafts Implanted</string>
     <string name="upload_screenshot_photo">Upload Screenshot Photo</string>
     <string name="button_save">Save Patient Information</string>
-    <string name="button_next">Submit &amp; Next</string>
+    <!--<string name="button_next">Submit &amp; Next</string>-->
+    <string name="button_next">Save</string>
+    <string name="button_open_hotspot">Hotspot turn on</string>
+    <string name="button_blynkapp">Open Blynk App</string>
     <string name="button_getpdf">Get PDF</string>
+    <string name="button_reviewpdf">Review PDF</string>
     <string name="button_get">Get Data</string>
     <string name="patient_list">Patient List</string>
     <string name="send_patient_pdf_email">Send Patient PDF Email</string>
@@ -43,6 +51,11 @@
     <string name="action_getlist">Get List</string>
     <string name="action_share">System Config</string>
     <string name="action_about">About Us</string>
+    <string name="action_hotspot">Hotspot</string>
+    <string name="action_internet">Internet</string>
+    <string name="front_scalp_photo">Front Scalp Photo</string>
+    <string name="left_scalp_photo">Left Scalp Photo</string>
+    <string name="right_scalp_photo">Right Scalp Photo</string>
 
     <string-array name="SurgeryPlans">
         <item>A. HAIR LINE REPAIR</item>

@@ -15,7 +15,7 @@ interface PatientDao {
     /*@Query("SELECT * FROM patient_data_item")
     fun getPatientDataList(): List<PatientDataEntity>?*/
 
-    @Query("SELECT * FROM patient_data_item")
+    @Query("SELECT * FROM patient_data_item ORDER BY patient_id DESC")
     fun getPatientDataList(): Flow<List<PatientDataEntity>>
 
     @Insert

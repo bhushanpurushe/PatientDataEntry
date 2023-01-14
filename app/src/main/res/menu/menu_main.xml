@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+   <!-- <item
+        android:id="@+id/action_hotspot"
+        android:title="@string/action_hotspot"
+        android:icon="@drawable/ic_wifi_on_tethering"
+        app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/action_about"
-        android:title="@string/action_about"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_systemconfig"
-        android:title="@string/action_share"
-        app:showAsAction="never"/>
+        android:id="@+id/action_internet"
+        android:title="@string/action_internet"
+        android:icon="@drawable/ic_cell_wifi_on"
+        app:showAsAction="ifRoom"/>-->
     <item
         android:id="@+id/action_getlist"
         android:orderInCategory="100"

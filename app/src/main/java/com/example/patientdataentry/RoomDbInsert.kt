@@ -47,7 +47,5 @@ class RoomDbInsert : AppCompatActivity() {
                 }
             }
         }
-
-
     }
 }
